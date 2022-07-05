@@ -1,7 +1,6 @@
 import csv
 
-from src.reminder import PoliteReminder
-from src.deadlined_reminders import DateReminder
+from src.deadlined_reminders import DeadlinedReminder
 
 
 def list_reminders():
@@ -17,9 +16,26 @@ def list_reminders():
         print()
 
 
-def add_reminder(text, date):
+def add_reminder(text, date, ReminderClass):
+    reminder = ReminderClass(text=text, date=date)
+
+    if not isinstance(reminder, DeadlinedReminder):
+        raise TypeError('Invalid Reminder Class')
+
+    with open('reminders.csv', 'a+', newline='\n') as file:
+        writer = csv.writer(file)
+        writer.writerow(reminder)
+
+
+def _dirty_add_reminder(text, date, ReminderClass):
+    if not issubclass(ReminderClass, DeadlinedReminder):
+        raise TypeError('Invalid Reminder Class')
+
     # reminder = PoliteReminder(text=text)
-    reminder = DateReminder(text=text, date=date)
+    reminder = ReminderClass(text=text, date=date)
+
+    if not isinstance(reminder, DeadlinedReminder):
+        raise TypeError('Invalid Reminder Class')
 
     with open('reminders.csv', 'a+', newline='\n') as file:
         writer = csv.writer(file)
